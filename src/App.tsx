@@ -10,17 +10,20 @@ import { useEffect, useState } from "react";
 
 const queryClient = new QueryClient();
 
+// Check if we're running in a Chrome extension context
+const isChromeExtension = typeof chrome !== 'undefined' && chrome.runtime && chrome.runtime.id;
+
 const App = () => {
   const [isExtension, setIsExtension] = useState(false);
 
   useEffect(() => {
     // Check if running in Chrome extension context
-    if (typeof chrome !== 'undefined' && chrome.runtime && chrome.runtime.id) {
+    if (isChromeExtension) {
       setIsExtension(true);
       
       // In extension mode, we need to sync localStorage with chrome.storage
       const syncStorage = async () => {
-        if (chrome.storage) {
+        if (chrome && chrome.storage) {
           // Get data from chrome.storage
           chrome.storage.local.get(['purchaseRecords', 'userStats', 'savingsGoals'], (data) => {
             // Update localStorage with chrome.storage data

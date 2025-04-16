@@ -1,4 +1,3 @@
-
 import { useState } from "react";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import Dashboard from "@/components/Dashboard";
@@ -9,7 +8,11 @@ import Settings from "@/components/Settings";
 import { Toaster } from "@/components/ui/sonner";
 import { ShoppingCart, BarChart3, PiggyBank, Info, Store, Settings2 } from "lucide-react";
 
-const Index = () => {
+interface IndexProps {
+  isExtension?: boolean;
+}
+
+const Index = ({ isExtension = false }: IndexProps) => {
   return (
     <div className="min-h-screen bg-gradient-to-b from-white to-purple-50">
       <header className="border-b bg-white shadow-sm">

@@ -24,7 +24,7 @@ const isExtension = typeof chrome !== 'undefined' && chrome.runtime && chrome.ru
 
 // Get purchase records
 export const getPurchaseRecords = (): PurchaseRecord[] => {
-  if (isExtension && chrome.storage) {
+  if (isExtension && chrome && chrome.storage) {
     // For synchronous use in extension, fall back to localStorage
     const records = localStorage.getItem(PURCHASE_RECORDS_KEY);
     return records ? JSON.parse(records) : [];
@@ -39,7 +39,7 @@ export const savePurchaseRecords = (records: PurchaseRecord[]): void => {
   localStorage.setItem(PURCHASE_RECORDS_KEY, JSON.stringify(records));
   
   // Also save to chrome.storage if in extension
-  if (isExtension && chrome.storage) {
+  if (isExtension && chrome && chrome.storage) {
     chrome.storage.local.set({ purchaseRecords: records });
   }
 };
@@ -54,7 +54,7 @@ export const addPurchaseRecord = (record: PurchaseRecord): void => {
 
 // Get user stats
 export const getUserStats = (): UserStats => {
-  if (isExtension && chrome.storage) {
+  if (isExtension && chrome && chrome.storage) {
     // For synchronous use in extension, fall back to localStorage
     const stats = localStorage.getItem(USER_STATS_KEY);
     return stats ? JSON.parse(stats) : initialUserStats;
@@ -69,7 +69,7 @@ export const saveUserStats = (stats: UserStats): void => {
   localStorage.setItem(USER_STATS_KEY, JSON.stringify(stats));
   
   // Also save to chrome.storage if in extension
-  if (isExtension && chrome.storage) {
+  if (isExtension && chrome && chrome.storage) {
     chrome.storage.local.set({ userStats: stats });
   }
 };
@@ -108,7 +108,7 @@ export const resetMonthlyStats = (): void => {
 
 // Get savings goals
 export const getSavingsGoals = (): SavingsGoal[] => {
-  if (isExtension && chrome.storage) {
+  if (isExtension && chrome && chrome.storage) {
     // For synchronous use in extension, fall back to localStorage
     const goals = localStorage.getItem(SAVINGS_GOALS_KEY);
     return goals ? JSON.parse(goals) : [];
@@ -123,7 +123,7 @@ export const saveSavingsGoals = (goals: SavingsGoal[]): void => {
   localStorage.setItem(SAVINGS_GOALS_KEY, JSON.stringify(goals));
   
   // Also save to chrome.storage if in extension
-  if (isExtension && chrome.storage) {
+  if (isExtension && chrome && chrome.storage) {
     chrome.storage.local.set({ savingsGoals: goals });
   }
 };
