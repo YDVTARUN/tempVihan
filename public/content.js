@@ -5,56 +5,68 @@ const marketplaceConfigs = [
     domain: "amazon",
     selectors: {
       productName: "#productTitle, .a-size-large.product-title-word-break",
-      price: ".a-price .a-offscreen, .a-price-whole",
-      buyButton: "#buy-now-button, #submit.a-button-input, .a-button-input[name='submit.buy-now']"
+      price: ".a-price .a-offscreen, .a-price-whole, .a-offscreen",
+      buyButton: "#buy-now-button, #submit.a-button-input, .a-button-input[name='submit.buy-now'], input[name='submit.buy-now']"
     }
   },
   {
     domain: "flipkart",
     selectors: {
-      productName: ".B_NuCI, ._30jeq3",
-      price: "._30jeq3._16Jk6d, ._30jeq3",
-      buyButton: "._2KpZ6l._2U9uOA._3v1-ww, ._2KpZ6l, button._2KpZ6l"
+      productName: ".B_NuCI, ._30jeq3, .G6XhRU",
+      price: "._30jeq3._16Jk6d, ._30jeq3, .dyC4hf",
+      buyButton: "._2KpZ6l._2U9uOA._3v1-ww, ._2KpZ6l, button._2KpZ6l, ._2KpZ6l._2U9uOA.ihZ75k"
     }
   },
   {
     domain: "ebay.com",
     selectors: {
-      productName: ".x-item-title__mainTitle",
-      price: ".x-price-primary .x-bin-price__content",
-      buyButton: ".x-bin-action__btn"
+      productName: ".x-item-title__mainTitle, .ux-textspans--BOLD",
+      price: ".x-price-primary .x-bin-price__content, .x-price-primary span",
+      buyButton: ".x-bin-action__btn, .btn.btn-prim, input[value='Buy It Now']"
     }
   },
   {
     domain: "walmart.com",
     selectors: {
-      productName: "[data-testid='product-title']",
-      price: "[data-testid='price-wrap'] .w_Cs",
-      buyButton: "[data-testid='add-to-cart-btn'], [data-testid='buy-now-btn']"
+      productName: "[data-testid='product-title'], .f3, .w_a9, .prod-ProductTitle",
+      price: "[data-testid='price-wrap'] .w_Cs, .f4.f3-m, span.w_hLcU",
+      buyButton: "[data-testid='add-to-cart-btn'], [data-testid='buy-now-btn'], button.button--primary"
     }
   },
   {
     domain: "etsy.com",
     selectors: {
-      productName: ".wt-text-body-01",
-      price: ".wt-text-title-03",
-      buyButton: ".add-to-cart-form button"
+      productName: ".wt-text-body-01, .wt-text-heading",
+      price: ".wt-text-title-03, .wt-text-title-01",
+      buyButton: ".add-to-cart-form button, .wt-btn--filled, form button[type='submit']"
     }
   },
   // Add more marketplaces as needed
 ];
 
+// Debug function - sends logs to background script and debug page
+function debug(message) {
+  console.log(`ImpulseLock: ${message}`);
+  
+  if (typeof chrome !== 'undefined' && chrome.runtime) {
+    chrome.runtime.sendMessage({
+      action: 'logInfo',
+      message: message
+    });
+  }
+}
+
 // Determine if we're on a supported marketplace
 function getCurrentMarketplace() {
   const hostname = window.location.hostname;
-  console.log("ImpulseLock: Current hostname:", hostname);
+  debug(`Current hostname: ${hostname}`);
   
   const marketplace = marketplaceConfigs.find(config => hostname.includes(config.domain));
   
   if (marketplace) {
-    console.log("ImpulseLock: Marketplace detected:", marketplace.domain);
+    debug(`Marketplace detected: ${marketplace.domain}`);
   } else {
-    console.log("ImpulseLock: No matching marketplace configuration found");
+    debug("No matching marketplace configuration found");
   }
   
   return marketplace;
@@ -62,34 +74,60 @@ function getCurrentMarketplace() {
 
 // Extract product information
 function extractProductInfo(config) {
-  console.log("ImpulseLock: Attempting to extract product info with selectors:", config.selectors);
+  debug(`Attempting to extract product info with selectors: ${JSON.stringify(config.selectors)}`);
   
+  // Try different selectors for product name and price
   const productNameElement = document.querySelector(config.selectors.productName);
   const priceElement = document.querySelector(config.selectors.price);
   
   if (!productNameElement) {
-    console.log("ImpulseLock: Could not find product name element");
+    debug("Could not find product name element");
+    debug(`Looked for: ${config.selectors.productName}`);
+    debug(`Current page title: ${document.title}`);
   }
   
   if (!priceElement) {
-    console.log("ImpulseLock: Could not find price element");
+    debug("Could not find price element");
+    debug(`Looked for: ${config.selectors.price}`);
   }
   
-  if (!productNameElement || !priceElement) return null;
+  if (!productNameElement && !priceElement) {
+    // If we can't find either product name or price, try to use page title and a default price
+    const pageTitle = document.title.split('|')[0].trim();
+    debug(`Using page title instead: ${pageTitle}`);
+    
+    return {
+      productName: pageTitle || "Unknown Product",
+      price: 99.99, // Default placeholder price
+      website: window.location.hostname
+    };
+  }
   
-  const productName = productNameElement.textContent.trim();
+  const productName = productNameElement ? productNameElement.textContent.trim() : document.title.split('|')[0].trim();
+  
   // Extract numeric price from text
-  const priceText = priceElement.textContent.trim();
-  const priceMatch = priceText.match(/(\\$|£|€|₹)?([0-9,.]+)/);
-  const price = priceMatch ? parseFloat(priceMatch[2].replace(/,/g, '')) : 0;
+  let price = 99.99; // Default price if extraction fails
   
-  console.log("ImpulseLock: Extracted product info:", { productName, price, website: window.location.hostname });
+  if (priceElement) {
+    const priceText = priceElement.textContent.trim();
+    debug(`Found price text: ${priceText}`);
+    
+    // Handle different currency formats
+    const priceMatch = priceText.match(/(\\$|£|€|₹|Rs\.)?([0-9,.]+)/);
+    if (priceMatch) {
+      price = parseFloat(priceMatch[2].replace(/,/g, ''));
+      debug(`Extracted price: ${price}`);
+    }
+  }
   
-  return {
+  const productInfo = {
     productName,
     price,
     website: window.location.hostname
   };
+  
+  debug(`Extracted product info: ${JSON.stringify(productInfo)}`);
+  return productInfo;
 }
 
 // Create and inject the ImpulseLock modal
@@ -176,6 +214,7 @@ function createImpulseModal(productInfo) {
   `;
   
   document.body.appendChild(modal);
+  debug("Modal created and appended to body");
   
   // Timer functionality
   const timerElement = document.getElementById('timer');
@@ -188,6 +227,7 @@ function createImpulseModal(productInfo) {
   // Close button
   document.getElementById('close-modal').addEventListener('click', () => {
     modal.remove();
+    debug("Modal closed by user");
   });
   
   // Timer interval
@@ -213,6 +253,7 @@ function createImpulseModal(productInfo) {
       continueButton.style.background = '#7E69AB';
       continueButton.style.cursor = 'pointer';
       saveButton.style.cursor = 'pointer';
+      debug("Buttons unlocked - user can now proceed");
     } else {
       continueButton.disabled = true;
       saveButton.disabled = true;
@@ -238,6 +279,7 @@ function createImpulseModal(productInfo) {
     // Record the purchase decision
     savePurchaseDecision(productInfo, reasonInput.value, true);
     modal.remove();
+    debug("User chose to continue with purchase");
   });
   
   // Save money instead
@@ -245,6 +287,7 @@ function createImpulseModal(productInfo) {
     // Record the save decision
     savePurchaseDecision(productInfo, reasonInput.value, false);
     modal.remove();
+    debug("User chose to save money instead");
     
     // Show confirmation message
     const savedMessage = document.createElement('div');
@@ -282,37 +325,45 @@ function savePurchaseDecision(productInfo, reason, wasPurchased) {
     website: productInfo.website
   };
   
+  debug(`Saving purchase decision - Purchased: ${wasPurchased}`);
+  
   // Get existing records
-  chrome.storage.local.get(['purchaseRecords', 'userStats'], function(data) {
-    // Update purchase records
-    const records = data.purchaseRecords || [];
-    records.unshift(record);
-    
-    // Update stats if money was saved
-    let stats = data.userStats || {
-      totalImpulsesStopped: 0,
-      totalMoneySaved: 0,
-      weeklyImpulsesStopped: 0,
-      weeklyMoneySaved: 0,
-      monthlyImpulsesStopped: 0,
-      monthlyMoneySaved: 0
-    };
-    
-    if (!wasPurchased) {
-      stats.totalImpulsesStopped += 1;
-      stats.totalMoneySaved += productInfo.price;
-      stats.weeklyImpulsesStopped += 1;
-      stats.weeklyMoneySaved += productInfo.price;
-      stats.monthlyImpulsesStopped += 1;
-      stats.monthlyMoneySaved += productInfo.price;
-    }
-    
-    // Save to storage
-    chrome.storage.local.set({
-      purchaseRecords: records,
-      userStats: stats
+  if (typeof chrome !== 'undefined' && chrome.storage) {
+    chrome.storage.local.get(['purchaseRecords', 'userStats'], function(data) {
+      // Update purchase records
+      const records = data.purchaseRecords || [];
+      records.unshift(record);
+      
+      // Update stats if money was saved
+      let stats = data.userStats || {
+        totalImpulsesStopped: 0,
+        totalMoneySaved: 0,
+        weeklyImpulsesStopped: 0,
+        weeklyMoneySaved: 0,
+        monthlyImpulsesStopped: 0,
+        monthlyMoneySaved: 0
+      };
+      
+      if (!wasPurchased) {
+        stats.totalImpulsesStopped += 1;
+        stats.totalMoneySaved += productInfo.price;
+        stats.weeklyImpulsesStopped += 1;
+        stats.weeklyMoneySaved += productInfo.price;
+        stats.monthlyImpulsesStopped += 1;
+        stats.monthlyMoneySaved += productInfo.price;
+      }
+      
+      // Save to storage
+      chrome.storage.local.set({
+        purchaseRecords: records,
+        userStats: stats
+      });
+      
+      debug("Purchase decision saved to storage");
     });
-  });
+  } else {
+    debug("Chrome storage not available, unable to save purchase decision");
+  }
 }
 
 // Generate UUID for record IDs
@@ -323,53 +374,113 @@ function generateUUID() {
   });
 }
 
-// Intercept buy button clicks
+// Intercept buy button clicks - IMPROVED VERSION
 function interceptBuyButtons(config) {
-  console.log("ImpulseLock: Looking for buy buttons with selector:", config.selectors.buyButton);
+  debug(`Looking for buy buttons with selector: ${config.selectors.buyButton}`);
+  
+  // Find all buy buttons
   const buyButtons = document.querySelectorAll(config.selectors.buyButton);
-  
-  console.log("ImpulseLock: Found", buyButtons.length, "buy buttons");
-  
-  buyButtons.forEach((button, index) => {
-    console.log("ImpulseLock: Processing button", index, button);
-    
-    // Remove any previous listeners
-    button.removeEventListener('click', handleBuyButtonClick);
-    
-    // Add new listener
-    button.addEventListener('click', handleBuyButtonClick);
-    console.log("ImpulseLock: Added click listener to button", index);
-  });
+  debug(`Found ${buyButtons.length} buy buttons`);
   
   function handleBuyButtonClick(event) {
-    console.log("ImpulseLock: Buy button clicked");
-    chrome.storage.local.get(['extensionEnabled'], function(data) {
-      const isEnabled = data.extensionEnabled !== undefined ? data.extensionEnabled : true;
-      console.log("ImpulseLock: Extension enabled:", isEnabled);
-      
-      if (isEnabled) {
-        event.preventDefault();
-        event.stopPropagation();
+    debug("Buy button clicked!");
+    
+    if (typeof chrome !== 'undefined' && chrome.storage) {
+      chrome.storage.local.get(['extensionEnabled'], function(data) {
+        const isEnabled = data.extensionEnabled !== undefined ? data.extensionEnabled : true;
+        debug(`Extension enabled: ${isEnabled}`);
         
-        const productInfo = extractProductInfo(config);
-        if (productInfo) {
-          createImpulseModal(productInfo);
-        } else {
-          console.error("ImpulseLock: Could not extract product information");
+        if (isEnabled) {
+          // Stop the default action
+          event.preventDefault();
+          event.stopPropagation();
+          
+          // Extract product information
+          const productInfo = extractProductInfo(config);
+          if (productInfo) {
+            createImpulseModal(productInfo);
+          } else {
+            debug("Could not extract product information");
+          }
+          
+          return false;
         }
-      }
-      // If disabled, let the normal click go through
-    });
+      });
+    } else {
+      debug("Chrome API not available, extension won't intercept");
+    }
   }
+  
+  // Add event listeners to all found buy buttons
+  buyButtons.forEach((button, index) => {
+    debug(`Setting up button ${index}: ${button.outerHTML.substring(0, 50)}...`);
+    
+    // Remove existing event listeners to avoid duplicates
+    button.removeEventListener('click', handleBuyButtonClick);
+    
+    // Add capture phase listener to catch the event before it propagates
+    button.addEventListener('click', handleBuyButtonClick, true);
+    
+    // Also add regular bubble phase listener as a backup
+    button.addEventListener('click', handleBuyButtonClick);
+    
+    // Add visual indicator that the button is being monitored (optional)
+    button.style.position = 'relative';
+    button.classList.add('impulselock-monitored');
+    
+    debug(`Added click listeners to button ${index}`);
+  });
+  
+  // For forms that might contain buy buttons
+  const forms = document.querySelectorAll('form');
+  debug(`Found ${forms.length} forms that might contain buy buttons`);
+  
+  forms.forEach((form, index) => {
+    // Check if the form might be a checkout form
+    const formAction = form.getAttribute('action') || '';
+    const formId = form.getAttribute('id') || '';
+    const formClass = form.getAttribute('class') || '';
+    
+    const isCheckoutForm = 
+      formAction.includes('checkout') || 
+      formAction.includes('buy') || 
+      formId.includes('buy') || 
+      formClass.includes('buy') ||
+      formAction.includes('add-to-cart');
+    
+    if (isCheckoutForm) {
+      debug(`Form ${index} looks like a checkout form: ${formId || formAction}`);
+      
+      // Add listener to the form submit event
+      form.addEventListener('submit', function(event) {
+        debug(`Form ${index} submit intercepted`);
+        
+        if (typeof chrome !== 'undefined' && chrome.storage) {
+          chrome.storage.local.get(['extensionEnabled'], function(data) {
+            const isEnabled = data.extensionEnabled !== undefined ? data.extensionEnabled : true;
+            
+            if (isEnabled) {
+              event.preventDefault();
+              
+              const productInfo = extractProductInfo(config);
+              if (productInfo) {
+                createImpulseModal(productInfo);
+              }
+            }
+          });
+        }
+      }, true);
+    }
+  });
 }
 
 // Initialize when page is loaded
 function initImpulseLock() {
-  console.log("ImpulseLock: Initializing extension");
+  debug("Initializing extension");
   const currentMarketplace = getCurrentMarketplace();
   
   if (currentMarketplace) {
-    console.log("ImpulseLock: Detected marketplace:", currentMarketplace.domain);
+    debug(`Detected marketplace: ${currentMarketplace.domain}`);
     
     // Initial button interception
     interceptBuyButtons(currentMarketplace);
@@ -384,30 +495,32 @@ function initImpulseLock() {
       subtree: true
     });
     
-    console.log("ImpulseLock: MutationObserver set up for dynamic content");
+    debug("MutationObserver set up for dynamic content");
   } else {
-    console.log("ImpulseLock: No supported marketplace detected on", window.location.hostname);
+    debug(`No supported marketplace detected on ${window.location.hostname}`);
   }
 }
 
 // Wait for page to be fully loaded
 if (document.readyState === 'loading') {
   document.addEventListener('DOMContentLoaded', initImpulseLock);
-  console.log("ImpulseLock: Waiting for DOMContentLoaded");
+  debug("Waiting for DOMContentLoaded");
 } else {
-  console.log("ImpulseLock: Page already loaded, initializing now");
+  debug("Page already loaded, initializing now");
   initImpulseLock();
 }
 
 // Add additional initialization for pages that load content dynamically
 window.addEventListener('load', function() {
-  console.log("ImpulseLock: Window load event fired, checking for buy buttons");
+  debug("Window load event fired, checking for buy buttons");
   setTimeout(initImpulseLock, 1000); // Re-initialize after a delay
 });
 
 // Add listeners for single-page apps that change content without a full page reload
 window.addEventListener('popstate', function() {
-  console.log("ImpulseLock: URL changed, re-initializing");
+  debug("URL changed, re-initializing");
   setTimeout(initImpulseLock, 500);
 });
 
+// Initial call to ensure it runs
+setTimeout(initImpulseLock, 500);

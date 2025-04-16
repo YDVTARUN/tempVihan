@@ -27,6 +27,8 @@
       align-items: center;
       justify-content: center;
       margin-right: 10px;
+      color: white;
+      font-size: 20px;
     }
     h1 {
       color: #7e69ab;
@@ -64,7 +66,7 @@
       margin-right: 8px;
     }
     #debug-log {
-      height: 300px;
+      height: 400px;
       overflow-y: auto;
       background-color: #f0f0f0;
       padding: 12px;
@@ -87,11 +89,17 @@
       margin-top: 24px;
       margin-bottom: 12px;
     }
+    .troubleshooting-steps {
+      margin-bottom: 0;
+    }
+    .troubleshooting-steps li {
+      margin-bottom: 8px;
+    }
   </style>
 </head>
 <body>
   <header>
-    <div class="logo">🐖</div>
+    <div class="logo">🛡️</div>
     <h1>ImpulseLock Debugger</h1>
   </header>
 
@@ -114,13 +122,22 @@
   
   <h2>Troubleshooting Guide</h2>
   <div class="card">
-    <p>If the extension isn't working on a shopping site:</p>
-    <ol>
+    <p><strong>If the extension isn't intercepting "Buy Now" buttons:</strong></p>
+    <ol class="troubleshooting-steps">
       <li>Make sure the extension is enabled (toggle above)</li>
-      <li>Check if the site is in our supported marketplaces list</li>
-      <li>Try refreshing the page</li>
-      <li>Look at the debug logs below for any errors</li>
-      <li>The content script might need updated selectors for the specific website</li>
+      <li>Verify you're on a supported site (Amazon, Flipkart, eBay, Walmart, Etsy)</li>
+      <li>Try the "Force Inject" button above while on a shopping site</li>
+      <li>Use "Inspect Active Tab" to analyze buy buttons on the current page</li>
+      <li>Try hard-refreshing the page (Ctrl+F5 or ⌘+Shift+R)</li>
+      <li>Look at the debug logs below for any errors or warnings</li>
+    </ol>
+    
+    <p><strong>Advanced troubleshooting:</strong></p>
+    <ol class="troubleshooting-steps">
+      <li>Open Chrome DevTools (F12), go to the "Console" tab, and look for ImpulseLock logs</li>
+      <li>Check the Extensions page (chrome://extensions) and verify ImpulseLock is enabled</li>
+      <li>Make sure you've granted all required permissions to the extension</li>
+      <li>Try reinstalling the extension if all else fails</li>
     </ol>
   </div>
 
@@ -132,4 +149,3 @@
   <script src="debug.js"></script>
 </body>
 </html>
-

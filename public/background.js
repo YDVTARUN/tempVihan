@@ -99,6 +99,17 @@ chrome.runtime.onMessage.addListener(function(request, sender, sendResponse) {
     console.log("ImpulseLock Content Script:", request.message);
     sendResponse({ success: true });
     return true;
+  } else if (request.action === 'logDebug') {
+    console.log("ImpulseLock Debug:", request.message);
+    // Forward to debug.html if it's open
+    chrome.runtime.sendMessage({
+      action: 'logDebug',
+      message: request.message
+    }).catch(() => {
+      // Debug page not open, that's fine
+    });
+    sendResponse({ success: true });
+    return true;
   }
 });
 
@@ -108,3 +119,31 @@ chrome.action.onClicked.addListener((tab) => {
   chrome.tabs.create({ url: chrome.runtime.getURL("popup.html") });
 });
 
+// Listen for tab updates to inject the content script
+chrome.tabs.onUpdated.addListener((tabId, changeInfo, tab) => {
+  if (changeInfo.status === 'complete' && tab.url) {
+    // Check if this is a marketplace we care about
+    const isShoppingUrl = 
+      tab.url.includes('amazon.com') || 
+      tab.url.includes('amazon.co.uk') || 
+      tab.url.includes('amazon.in') ||
+      tab.url.includes('flipkart.com') ||
+      tab.url.includes('walmart.com') ||
+      tab.url.includes('ebay.com') ||
+      tab.url.includes('etsy.com');
+    
+    if (isShoppingUrl) {
+      console.log(`ImpulseLock: Detected shopping site on tab ${tabId}: ${tab.url}`);
+      
+      // Execute the content script to ensure it's running
+      chrome.scripting.executeScript({
+        target: { tabId: tabId },
+        files: ['content.js']
+      }).then(() => {
+        console.log(`ImpulseLock: Content script injected into tab ${tabId}`);
+      }).catch(err => {
+        console.error(`ImpulseLock: Error injecting content script: ${err}`);
+      });
+    }
+  }
+});
