@@ -1,0 +1,135 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>ImpulseLock Debug</title>
+  <style>
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      max-width: 800px;
+      margin: 0 auto;
+      padding: 20px;
+      background-color: #f9f5ff;
+    }
+    header {
+      display: flex;
+      align-items: center;
+      margin-bottom: 20px;
+    }
+    .logo {
+      width: 40px;
+      height: 40px;
+      background-color: #7e69ab;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin-right: 10px;
+    }
+    h1 {
+      color: #7e69ab;
+      margin: 0;
+    }
+    .card {
+      background-color: white;
+      border-radius: 8px;
+      padding: 16px;
+      margin-bottom: 16px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+    }
+    .controls {
+      display: flex;
+      gap: 10px;
+      margin-bottom: 16px;
+    }
+    button {
+      background-color: #7e69ab;
+      color: white;
+      border: none;
+      padding: 8px 16px;
+      border-radius: 4px;
+      cursor: pointer;
+    }
+    button:hover {
+      background-color: #6a5a90;
+    }
+    .toggle {
+      display: flex;
+      align-items: center;
+      margin-bottom: 16px;
+    }
+    .toggle input {
+      margin-right: 8px;
+    }
+    #debug-log {
+      height: 300px;
+      overflow-y: auto;
+      background-color: #f0f0f0;
+      padding: 12px;
+      border-radius: 4px;
+      font-family: monospace;
+      font-size: 14px;
+      line-height: 1.5;
+    }
+    .log-entry {
+      margin-bottom: 4px;
+      border-bottom: 1px solid #ddd;
+      padding-bottom: 4px;
+    }
+    .test-site-btn {
+      margin-right: 8px;
+      margin-bottom: 8px;
+    }
+    h2 {
+      color: #7e69ab;
+      margin-top: 24px;
+      margin-bottom: 12px;
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <div class="logo">🐖</div>
+    <h1>ImpulseLock Debugger</h1>
+  </header>
+
+  <div class="card">
+    <div class="toggle">
+      <input type="checkbox" id="enable-extension" checked>
+      <label for="enable-extension">Enable Extension</label>
+    </div>
+    
+    <div class="controls">
+      <button id="refresh-data">Refresh Data</button>
+      <button id="clear-log">Clear Log</button>
+    </div>
+  </div>
+  
+  <h2>Test on Shopping Sites</h2>
+  <div class="card">
+    <div id="test-buttons"></div>
+  </div>
+  
+  <h2>Troubleshooting Guide</h2>
+  <div class="card">
+    <p>If the extension isn't working on a shopping site:</p>
+    <ol>
+      <li>Make sure the extension is enabled (toggle above)</li>
+      <li>Check if the site is in our supported marketplaces list</li>
+      <li>Try refreshing the page</li>
+      <li>Look at the debug logs below for any errors</li>
+      <li>The content script might need updated selectors for the specific website</li>
+    </ol>
+  </div>
+
+  <h2>Debug Log</h2>
+  <div class="card">
+    <div id="debug-log"></div>
+  </div>
+
+  <script src="debug.js"></script>
+</body>
+</html>
+

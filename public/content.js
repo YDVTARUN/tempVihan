@@ -2,11 +2,19 @@
 // Marketplace configurations
 const marketplaceConfigs = [
   {
-    domain: "amazon.com",
+    domain: "amazon",
     selectors: {
-      productName: "#productTitle",
-      price: ".a-price .a-offscreen",
-      buyButton: "#buy-now-button, #submit.a-button-input"
+      productName: "#productTitle, .a-size-large.product-title-word-break",
+      price: ".a-price .a-offscreen, .a-price-whole",
+      buyButton: "#buy-now-button, #submit.a-button-input, .a-button-input[name='submit.buy-now']"
+    }
+  },
+  {
+    domain: "flipkart",
+    selectors: {
+      productName: ".B_NuCI, ._30jeq3",
+      price: "._30jeq3._16Jk6d, ._30jeq3",
+      buyButton: "._2KpZ6l._2U9uOA._3v1-ww, ._2KpZ6l, button._2KpZ6l"
     }
   },
   {
@@ -39,13 +47,33 @@ const marketplaceConfigs = [
 // Determine if we're on a supported marketplace
 function getCurrentMarketplace() {
   const hostname = window.location.hostname;
-  return marketplaceConfigs.find(config => hostname.includes(config.domain));
+  console.log("ImpulseLock: Current hostname:", hostname);
+  
+  const marketplace = marketplaceConfigs.find(config => hostname.includes(config.domain));
+  
+  if (marketplace) {
+    console.log("ImpulseLock: Marketplace detected:", marketplace.domain);
+  } else {
+    console.log("ImpulseLock: No matching marketplace configuration found");
+  }
+  
+  return marketplace;
 }
 
 // Extract product information
 function extractProductInfo(config) {
+  console.log("ImpulseLock: Attempting to extract product info with selectors:", config.selectors);
+  
   const productNameElement = document.querySelector(config.selectors.productName);
   const priceElement = document.querySelector(config.selectors.price);
+  
+  if (!productNameElement) {
+    console.log("ImpulseLock: Could not find product name element");
+  }
+  
+  if (!priceElement) {
+    console.log("ImpulseLock: Could not find price element");
+  }
   
   if (!productNameElement || !priceElement) return null;
   
@@ -54,6 +82,8 @@ function extractProductInfo(config) {
   const priceText = priceElement.textContent.trim();
   const priceMatch = priceText.match(/(\\$|£|€|₹)?([0-9,.]+)/);
   const price = priceMatch ? parseFloat(priceMatch[2].replace(/,/g, '')) : 0;
+  
+  console.log("ImpulseLock: Extracted product info:", { productName, price, website: window.location.hostname });
   
   return {
     productName,
@@ -295,19 +325,27 @@ function generateUUID() {
 
 // Intercept buy button clicks
 function interceptBuyButtons(config) {
+  console.log("ImpulseLock: Looking for buy buttons with selector:", config.selectors.buyButton);
   const buyButtons = document.querySelectorAll(config.selectors.buyButton);
   
-  buyButtons.forEach(button => {
+  console.log("ImpulseLock: Found", buyButtons.length, "buy buttons");
+  
+  buyButtons.forEach((button, index) => {
+    console.log("ImpulseLock: Processing button", index, button);
+    
     // Remove any previous listeners
     button.removeEventListener('click', handleBuyButtonClick);
     
     // Add new listener
     button.addEventListener('click', handleBuyButtonClick);
+    console.log("ImpulseLock: Added click listener to button", index);
   });
   
   function handleBuyButtonClick(event) {
+    console.log("ImpulseLock: Buy button clicked");
     chrome.storage.local.get(['extensionEnabled'], function(data) {
       const isEnabled = data.extensionEnabled !== undefined ? data.extensionEnabled : true;
+      console.log("ImpulseLock: Extension enabled:", isEnabled);
       
       if (isEnabled) {
         event.preventDefault();
@@ -316,6 +354,8 @@ function interceptBuyButtons(config) {
         const productInfo = extractProductInfo(config);
         if (productInfo) {
           createImpulseModal(productInfo);
+        } else {
+          console.error("ImpulseLock: Could not extract product information");
         }
       }
       // If disabled, let the normal click go through
@@ -325,10 +365,11 @@ function interceptBuyButtons(config) {
 
 // Initialize when page is loaded
 function initImpulseLock() {
+  console.log("ImpulseLock: Initializing extension");
   const currentMarketplace = getCurrentMarketplace();
   
   if (currentMarketplace) {
-    console.log('ImpulseLock: Detected marketplace:', currentMarketplace.domain);
+    console.log("ImpulseLock: Detected marketplace:", currentMarketplace.domain);
     
     // Initial button interception
     interceptBuyButtons(currentMarketplace);
@@ -342,12 +383,31 @@ function initImpulseLock() {
       childList: true,
       subtree: true
     });
+    
+    console.log("ImpulseLock: MutationObserver set up for dynamic content");
+  } else {
+    console.log("ImpulseLock: No supported marketplace detected on", window.location.hostname);
   }
 }
 
 // Wait for page to be fully loaded
 if (document.readyState === 'loading') {
   document.addEventListener('DOMContentLoaded', initImpulseLock);
+  console.log("ImpulseLock: Waiting for DOMContentLoaded");
 } else {
+  console.log("ImpulseLock: Page already loaded, initializing now");
   initImpulseLock();
 }
+
+// Add additional initialization for pages that load content dynamically
+window.addEventListener('load', function() {
+  console.log("ImpulseLock: Window load event fired, checking for buy buttons");
+  setTimeout(initImpulseLock, 1000); // Re-initialize after a delay
+});
+
+// Add listeners for single-page apps that change content without a full page reload
+window.addEventListener('popstate', function() {
+  console.log("ImpulseLock: URL changed, re-initializing");
+  setTimeout(initImpulseLock, 500);
+});
+
