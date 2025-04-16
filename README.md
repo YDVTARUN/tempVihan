@@ -1,73 +1,48 @@
-# Welcome to your Lovable project
 
-## Project info
+# ImpulseLock: Mindful Spending Assistant
 
-**URL**: https://lovable.dev/projects/b51ea499-b0f6-4b55-80ce-2003bf2deeac
+ImpulseLock is a Chrome extension and mobile plugin designed to help users avoid impulsive online purchases by applying psychological friction before completing transactions.
 
-## How can I edit this code?
+## Features
 
-There are several ways of editing your application.
+- **Purchase Interruption**: Detects checkout pages and overlays a modal when users attempt to make a purchase
+- **Reflection Timer**: Enforces a 10-second pause before allowing the purchase to continue 
+- **Mindful Spending**: Requires users to articulate why they're making this purchase right now
+- **Savings Redirection**: Option to save the money instead of completing the purchase
+- **Analytics Dashboard**: Tracks impulse purchases stopped and money saved
+- **Behavioral Insights**: Analyzes spending patterns and provides personalized tips
 
-**Use Lovable**
+## How It Works
 
-Simply visit the [Lovable Project](https://lovable.dev/projects/b51ea499-b0f6-4b55-80ce-2003bf2deeac) and start prompting.
+1. **Detect Purchase Intent**: The extension identifies when a user is about to complete a purchase
+2. **Activate Impulse Vault**: A modal appears, blocking the purchase button 
+3. **Enforced Reflection**: Users must wait 10 seconds and explain their purchase motivation
+4. **Decision Support**: After reflection, users can proceed with the purchase or save the money
+5. **Track Progress**: All decisions are recorded to help users visualize their spending habits
 
-Changes made via Lovable will be committed automatically to this repo.
+## Technology
 
-**Use your preferred IDE**
+This application is built with:
+- React with TypeScript
+- TailwindCSS for styling
+- LocalStorage for data persistence (MVP version)
 
-If you want to work locally using your own IDE, you can clone this repo and push changes. Pushed changes will also be reflected in Lovable.
+## Next Steps
 
-The only requirement is having Node.js & npm installed - [install with nvm](https://github.com/nvm-sh/nvm#installing-and-updating)
+Future enhancements planned for ImpulseLock include:
+- Chrome Web Store extension packaging
+- Mobile app version using React Native
+- Cloud synchronization across devices
+- Integration with banking APIs for direct savings transfers
+- Machine learning to better predict and prevent impulsive spending
 
-Follow these steps:
+## Business Model
 
-```sh
-# Step 1: Clone the repository using the project's Git URL.
-git clone <YOUR_GIT_URL>
+ImpulseLock follows a freemium model:
+- **Free tier**: Basic impulse control features
+- **Premium tier**: Advanced analytics, AI-powered insights, and automatic savings ($99/month)
+- **Enterprise**: B2B offering for banks and financial institutions
 
-# Step 2: Navigate to the project directory.
-cd <YOUR_PROJECT_NAME>
+## About
 
-# Step 3: Install the necessary dependencies.
-npm i
-
-# Step 4: Start the development server with auto-reloading and an instant preview.
-npm run dev
-```
-
-**Edit a file directly in GitHub**
-
-- Navigate to the desired file(s).
-- Click the "Edit" button (pencil icon) at the top right of the file view.
-- Make your changes and commit the changes.
-
-**Use GitHub Codespaces**
-
-- Navigate to the main page of your repository.
-- Click on the "Code" button (green button) near the top right.
-- Select the "Codespaces" tab.
-- Click on "New codespace" to launch a new Codespace environment.
-- Edit files directly within the Codespace and commit and push your changes once you're done.
-
-## What technologies are used for this project?
-
-This project is built with:
-
-- Vite
-- TypeScript
-- React
-- shadcn-ui
-- Tailwind CSS
-
-## How can I deploy this project?
-
-Simply open [Lovable](https://lovable.dev/projects/b51ea499-b0f6-4b55-80ce-2003bf2deeac) and click on Share -> Publish.
-
-## Can I connect a custom domain to my Lovable project?
-
-Yes, you can!
-
-To connect a domain, navigate to Project > Settings > Domains and click Connect Domain.
-
-Read more here: [Setting up a custom domain](https://docs.lovable.dev/tips-tricks/custom-domain#step-by-step-guide)
+ImpulseLock was created based on behavioral economics research showing that introducing even small friction points in the purchasing process can significantly reduce impulsive spending.
