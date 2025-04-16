@@ -2,7 +2,6 @@
 import { useState, useEffect, useRef } from "react";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
-import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { addPurchaseRecord } from "@/lib/storage";
 import { v4 as uuidv4 } from "uuid";
@@ -14,6 +13,7 @@ interface ImpulseModalProps {
   productName: string;
   price: number;
   onSaveMoney: (amount: number) => void;
+  website?: string;
 }
 
 const ImpulseModal = ({
@@ -22,6 +22,7 @@ const ImpulseModal = ({
   productName,
   price,
   onSaveMoney,
+  website,
 }: ImpulseModalProps) => {
   const [timeLeft, setTimeLeft] = useState(10);
   const [reason, setReason] = useState("");
@@ -59,6 +60,7 @@ const ImpulseModal = ({
       reason,
       wasPurchased: true,
       wasSaved: false,
+      website: website || window.location.hostname,
     };
     
     addPurchaseRecord(record);
@@ -74,6 +76,7 @@ const ImpulseModal = ({
       reason,
       wasPurchased: false,
       wasSaved: true,
+      website: website || window.location.hostname,
     };
     
     addPurchaseRecord(record);
@@ -106,6 +109,12 @@ const ImpulseModal = ({
             <span className="text-sm text-gray-500">Price:</span>
             <span className="font-medium">${price.toFixed(2)}</span>
           </div>
+          {website && (
+            <div className="flex items-center justify-between mt-1">
+              <span className="text-sm text-gray-500">Website:</span>
+              <span className="font-medium text-purple-600">{website}</span>
+            </div>
+          )}
         </div>
 
         <div className="mb-6">

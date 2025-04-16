@@ -25,7 +25,31 @@ ImpulseLock is a Chrome extension and mobile plugin designed to help users avoid
 This application is built with:
 - React with TypeScript
 - TailwindCSS for styling
-- LocalStorage for data persistence (MVP version)
+- Chrome Extension APIs
+- LocalStorage and Chrome Storage for data persistence
+
+## Installation
+
+### Chrome Extension Installation (For Developers)
+
+1. Clone this repository to your local machine
+2. Run `npm install` to install dependencies
+3. Run `npm run build` to build the extension
+4. Open Chrome and navigate to `chrome://extensions/`
+5. Enable "Developer mode" in the top right corner
+6. Click "Load unpacked" and select the `dist` directory from this project
+7. The ImpulseLock extension should now be installed in your browser
+
+### Supported Marketplaces
+
+ImpulseLock works on many popular e-commerce sites including:
+- Amazon
+- eBay
+- Walmart
+- Etsy
+- And many more!
+
+The extension automatically detects product information and buy buttons on supported sites.
 
 ## Next Steps
 

@@ -19,15 +19,29 @@ const initialUserStats: UserStats = {
   monthlyMoneySaved: 0,
 };
 
-// Get purchase records from localStorage
+// Detect if we're running in extension context
+const isExtension = typeof chrome !== 'undefined' && chrome.runtime && chrome.runtime.id;
+
+// Get purchase records
 export const getPurchaseRecords = (): PurchaseRecord[] => {
-  const records = localStorage.getItem(PURCHASE_RECORDS_KEY);
-  return records ? JSON.parse(records) : [];
+  if (isExtension && chrome.storage) {
+    // For synchronous use in extension, fall back to localStorage
+    const records = localStorage.getItem(PURCHASE_RECORDS_KEY);
+    return records ? JSON.parse(records) : [];
+  } else {
+    const records = localStorage.getItem(PURCHASE_RECORDS_KEY);
+    return records ? JSON.parse(records) : [];
+  }
 };
 
-// Save purchase records to localStorage
+// Save purchase records
 export const savePurchaseRecords = (records: PurchaseRecord[]): void => {
   localStorage.setItem(PURCHASE_RECORDS_KEY, JSON.stringify(records));
+  
+  // Also save to chrome.storage if in extension
+  if (isExtension && chrome.storage) {
+    chrome.storage.local.set({ purchaseRecords: records });
+  }
 };
 
 // Add a new purchase record
@@ -38,15 +52,26 @@ export const addPurchaseRecord = (record: PurchaseRecord): void => {
   updateUserStats(record);
 };
 
-// Get user stats from localStorage
+// Get user stats
 export const getUserStats = (): UserStats => {
-  const stats = localStorage.getItem(USER_STATS_KEY);
-  return stats ? JSON.parse(stats) : initialUserStats;
+  if (isExtension && chrome.storage) {
+    // For synchronous use in extension, fall back to localStorage
+    const stats = localStorage.getItem(USER_STATS_KEY);
+    return stats ? JSON.parse(stats) : initialUserStats;
+  } else {
+    const stats = localStorage.getItem(USER_STATS_KEY);
+    return stats ? JSON.parse(stats) : initialUserStats;
+  }
 };
 
-// Save user stats to localStorage
+// Save user stats
 export const saveUserStats = (stats: UserStats): void => {
   localStorage.setItem(USER_STATS_KEY, JSON.stringify(stats));
+  
+  // Also save to chrome.storage if in extension
+  if (isExtension && chrome.storage) {
+    chrome.storage.local.set({ userStats: stats });
+  }
 };
 
 // Update user stats when a purchase is made or saved
@@ -81,15 +106,26 @@ export const resetMonthlyStats = (): void => {
   saveUserStats(stats);
 };
 
-// Get savings goals from localStorage
+// Get savings goals
 export const getSavingsGoals = (): SavingsGoal[] => {
-  const goals = localStorage.getItem(SAVINGS_GOALS_KEY);
-  return goals ? JSON.parse(goals) : [];
+  if (isExtension && chrome.storage) {
+    // For synchronous use in extension, fall back to localStorage
+    const goals = localStorage.getItem(SAVINGS_GOALS_KEY);
+    return goals ? JSON.parse(goals) : [];
+  } else {
+    const goals = localStorage.getItem(SAVINGS_GOALS_KEY);
+    return goals ? JSON.parse(goals) : [];
+  }
 };
 
-// Save savings goals to localStorage
+// Save savings goals
 export const saveSavingsGoals = (goals: SavingsGoal[]): void => {
   localStorage.setItem(SAVINGS_GOALS_KEY, JSON.stringify(goals));
+  
+  // Also save to chrome.storage if in extension
+  if (isExtension && chrome.storage) {
+    chrome.storage.local.set({ savingsGoals: goals });
+  }
 };
 
 // Add a new savings goal

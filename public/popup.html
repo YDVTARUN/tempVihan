@@ -1,0 +1,96 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>ImpulseLock</title>
+  <style>
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      width: 320px;
+      padding: 16px;
+      background: #f9f7fe;
+    }
+    .header {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      margin-bottom: 16px;
+    }
+    .logo {
+      background-color: #8B5CF6;
+      color: white;
+      width: 32px;
+      height: 32px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    h1 {
+      font-size: 18px;
+      margin: 0;
+      color: #553C9A;
+    }
+    .stats {
+      background: white;
+      border-radius: 8px;
+      padding: 12px;
+      margin-bottom: 16px;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+    }
+    .stat-item {
+      display: flex;
+      justify-content: space-between;
+      margin-bottom: 8px;
+    }
+    .button {
+      background: #8B5CF6;
+      color: white;
+      border: none;
+      border-radius: 6px;
+      padding: 8px 16px;
+      font-weight: 500;
+      cursor: pointer;
+      width: 100%;
+      margin-top: 8px;
+    }
+    .button:hover {
+      background: #7C3AED;
+    }
+    .footer {
+      font-size: 12px;
+      color: #6B7280;
+      text-align: center;
+      margin-top: 16px;
+    }
+  </style>
+</head>
+<body>
+  <div class="header">
+    <div class="logo">💰</div>
+    <h1>ImpulseLock</h1>
+  </div>
+  
+  <div class="stats">
+    <div class="stat-item">
+      <span>Impulses Stopped:</span>
+      <span id="impulses-stopped">0</span>
+    </div>
+    <div class="stat-item">
+      <span>Money Saved:</span>
+      <span id="money-saved">$0.00</span>
+    </div>
+  </div>
+  
+  <button class="button" id="open-dashboard">Open Dashboard</button>
+  <button class="button" id="toggle-extension">Enabled</button>
+  
+  <div class="footer">
+    Helping you make mindful spending decisions.
+  </div>
+
+  <script src="popup.js"></script>
+</body>
+</html>

@@ -9,6 +9,7 @@ export interface PurchaseRecord {
   reason: string;
   wasPurchased: boolean;
   wasSaved: boolean;
+  website?: string; // The website/marketplace where the purchase was attempted
 }
 
 export interface UserStats {
@@ -26,4 +27,13 @@ export interface SavingsGoal {
   targetAmount: number;
   currentAmount: number;
   deadline?: string;
+}
+
+export interface MarketplaceConfig {
+  domain: string;
+  selectors: {
+    productName: string;
+    price: string;
+    buyButton: string;
+  };
 }
