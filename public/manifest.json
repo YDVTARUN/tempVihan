@@ -1,7 +1,7 @@
 
 {
   "manifest_version": 3,
-  "name": "ImpulseLock",
+  "name": "Spindle",
   "version": "1.0.0",
   "description": "Prevent impulsive purchases with mindful reflection",
   "icons": {

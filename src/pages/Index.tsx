@@ -21,7 +21,7 @@ const Index = ({ isExtension = false }: IndexProps) => {
             <div className="h-8 w-8 rounded-full bg-purple-600 flex items-center justify-center text-white">
               <PiggyBank size={18} />
             </div>
-            <h1 className="text-xl font-bold text-purple-800">ImpulseLock</h1>
+            <h1 className="text-xl font-bold text-purple-800">Spindle</h1>
           </div>
           <div className="text-sm text-purple-600 font-medium">
             Mindful Spending Assistant
@@ -66,7 +66,7 @@ const Index = ({ isExtension = false }: IndexProps) => {
             <div className="container mx-auto p-4">
               <h2 className="text-2xl font-bold mb-4">Extension Demo</h2>
               <p className="mb-6 text-gray-600">
-                This demonstrates how ImpulseLock would work as a Chrome extension when you're on a checkout page. 
+                This demonstrates how Spindle would work as a Chrome extension when you're on a checkout page. 
                 When you click "Place Order", the Impulse Vault will appear and help you make a mindful decision.
               </p>
               <MockShoppingSite />
@@ -91,7 +91,7 @@ const Index = ({ isExtension = false }: IndexProps) => {
                 <div className="h-6 w-6 rounded-full bg-purple-600 flex items-center justify-center text-white">
                   <PiggyBank size={14} />
                 </div>
-                <span className="font-semibold text-purple-800">ImpulseLock</span>
+                <span className="font-semibold text-purple-800">Spindle</span>
               </div>
               <p className="text-sm text-gray-500 mt-1">
                 Making mindful spending easier
@@ -100,7 +100,7 @@ const Index = ({ isExtension = false }: IndexProps) => {
             
             <div className="flex items-center space-x-2">
               <span className="text-sm text-gray-500">
-                © {new Date().getFullYear()} ImpulseLock MVP
+                © {new Date().getFullYear()} Spindle MVP
               </span>
             </div>
           </div>

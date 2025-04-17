@@ -1,7 +1,6 @@
+# Spindle: Mindful Spending Assistant
 
-# ImpulseLock: Mindful Spending Assistant
-
-ImpulseLock is a Chrome extension and mobile plugin designed to help users avoid impulsive online purchases by applying psychological friction before completing transactions.
+Spindle is a Chrome extension and mobile plugin designed to help users avoid impulsive online purchases by applying psychological friction before completing transactions.
 
 ## Features
 
@@ -38,11 +37,11 @@ This application is built with:
 4. Open Chrome and navigate to `chrome://extensions/`
 5. Enable "Developer mode" in the top right corner
 6. Click "Load unpacked" and select the `dist` directory from this project
-7. The ImpulseLock extension should now be installed in your browser
+7. The Spindle extension should now be installed in your browser
 
 ### Supported Marketplaces
 
-ImpulseLock works on many popular e-commerce sites including:
+Spindle works on many popular e-commerce sites including:
 - Amazon
 - eBay
 - Walmart
@@ -53,7 +52,7 @@ The extension automatically detects product information and buy buttons on suppo
 
 ## Next Steps
 
-Future enhancements planned for ImpulseLock include:
+Future enhancements planned for Spindle include:
 - Chrome Web Store extension packaging
 - Mobile app version using React Native
 - Cloud synchronization across devices
@@ -62,11 +61,11 @@ Future enhancements planned for ImpulseLock include:
 
 ## Business Model
 
-ImpulseLock follows a freemium model:
+Spindle follows a freemium model:
 - **Free tier**: Basic impulse control features
 - **Premium tier**: Advanced analytics, AI-powered insights, and automatic savings ($99/month)
 - **Enterprise**: B2B offering for banks and financial institutions
 
 ## About
 
-ImpulseLock was created based on behavioral economics research showing that introducing even small friction points in the purchasing process can significantly reduce impulsive spending.
+Spindle was created based on behavioral economics research showing that introducing even small friction points in the purchasing process can significantly reduce impulsive spending.
